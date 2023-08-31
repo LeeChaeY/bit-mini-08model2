@@ -16,6 +16,9 @@ public class Purchase {
 	private String receiverPhone;
 	private String tranCode;
 	private int tranNo;
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// JSON ==> Domain Object  Binding을 위해 추가된 부분
+	private String orderDateString;
 	
 	public Purchase(){
 	}
@@ -47,8 +50,17 @@ public class Purchase {
 	public Date getOrderDate() {
 		return orderDate;
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// JSON ==> Domain Object  Binding을 위해 추가된 부분
 	public void setOrderDate(Date orderDate) {
 		this.orderDate = orderDate;
+		
+		if(orderDate !=null) {
+			// JSON ==> Domain Object  Binding을 위해 추가된 부분
+			this.setOrderDateString( orderDate.toString().split("-")[0]
+													+"-"+ orderDate.toString().split("-")[1]
+													+ "-" +orderDate.toString().split("-")[2] );
+		}
 	}
 	public String getPaymentOption() {
 		return paymentOption;
@@ -85,6 +97,14 @@ public class Purchase {
 	}
 	public void setTranNo(int tranNo) {
 		this.tranNo = tranNo;
+	}
+	
+	public String getOrderDateString() {
+		return orderDateString;
+	}
+
+	public void setOrderDateString(String orderDateString) {
+		this.orderDateString = orderDateString;
 	}
 	
 	@Override
