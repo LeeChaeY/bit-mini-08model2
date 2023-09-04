@@ -47,13 +47,51 @@ public class UserRestController {
 	@Value("#{commonProperties['pageSize'] ?: 2}")
 	int pageSize;
 	
+	@RequestMapping(value="json/addUser", method=RequestMethod.GET )
+	public String addUser() throws Exception {
+
+		System.out.println("/json/user/addUser : GET");
+		
+		return "redirect:/user/addUserView.jsp";
+	}
+	
+	@RequestMapping(value="json/addUser", method=RequestMethod.POST)
+	public User addUser( @RequestBody User user ) throws Exception {
+		
+		System.out.println("/json/user/addUser : POST : "+user);
+		//Business Logic
+		userService.addUser(user);
+		
+		return user;
+	}
+	
 	@RequestMapping( value="json/getUser/{userId}", method=RequestMethod.GET )
 	public User getUser( @PathVariable String userId ) throws Exception{
 		
-		System.out.println("/user/json/getUser : GET");
+		System.out.println("/user/json/getUser : GET : "+userId);
 		
 		//Business Logic
 		return userService.getUser(userId);
+	}
+	
+	@RequestMapping(value="json/updateUser/{userId}", method=RequestMethod.GET )
+	public User updateUser( @PathVariable String userId) throws Exception{
+
+		System.out.println("/json/user/updateUser : GET : "+userId);
+		//Business Logic
+		User user = userService.getUser(userId);
+		
+		return user;
+	}
+	
+	@RequestMapping(value="json/updateUser", method=RequestMethod.POST)
+	public User updateUser( @RequestBody User user , Model model , HttpSession session) throws Exception{
+		//Business Logic
+		userService.updateUser(user);
+		
+		System.out.println("/json/user/updateUser : POST : user : "+user);
+		
+		return user;
 	}
 	
 	@RequestMapping(value="json/login", method=RequestMethod.GET)
@@ -65,27 +103,20 @@ public class UserRestController {
 	}
 
 	@RequestMapping( value="json/login", method=RequestMethod.POST )
-	public User login(	@RequestBody User user,
-									HttpSession session ) throws Exception{
+	public User login(	@RequestBody User user) throws Exception{
 	
 		System.out.println("/user/json/login : POST");
 		//Business Logic
 		System.out.println("::"+user);
 		User dbUser=userService.getUser(user.getUserId());
 		
-		if( user.getPassword().equals(dbUser.getPassword())){
-			session.setAttribute("user", dbUser);
-		}
-		
 		return dbUser;
 	}
 	
 	@RequestMapping(value="json/logout", method=RequestMethod.GET )
-	public String logout(HttpSession session ) throws Exception{
+	public String logout() throws Exception{
 		
 		System.out.println("/user/json/logout : GET");
-		
-		session.invalidate();
 		
 		return "redirect:/index.jsp";
 	}
@@ -103,4 +134,35 @@ public class UserRestController {
 
 		return map;
 	}
+	
+	@RequestMapping(value="json/listUser")
+	public Map listUser( @RequestBody Search search) throws Exception{
+		
+		System.out.println("/json/user/listUser: GET / POST");
+		
+		if(search.getCurrentPage() ==0 ){
+			search.setCurrentPage(1);
+		}
+		search.setPageSize(pageSize);
+		
+		String searchKeyword = null;
+		if(search.getSearchKeyword() != null && !search.getSearchKeyword().equals(""))
+			searchKeyword = search.getSearchKeyword();
+		
+		// Business logic ผ๖วเ
+		Map<String , Object> map=userService.getUserList(search);
+		
+		if(search.getSearchKeyword() != null && !search.getSearchKeyword().equals(""))
+			search.setSearchKeyword(searchKeyword);
+		
+		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
+		System.out.println("ListUserAction ::"+resultPage);
+		
+		map.put("list", map.get("list"));
+		map.put("resultPage", resultPage);
+		map.put("search", search);
+		
+		return map;
+	}
+	
 }
