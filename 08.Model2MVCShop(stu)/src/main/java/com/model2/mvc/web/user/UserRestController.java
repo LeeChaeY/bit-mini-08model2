@@ -85,7 +85,7 @@ public class UserRestController {
 	}
 	
 	@RequestMapping(value="json/updateUser", method=RequestMethod.POST)
-	public User updateUser( @RequestBody User user , Model model , HttpSession session) throws Exception{
+	public User updateUser( @RequestBody User user) throws Exception{
 		//Business Logic
 		userService.updateUser(user);
 		
