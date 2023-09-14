@@ -54,7 +54,7 @@ public class PurchaseController {
 	
 	
 	@RequestMapping(value="addPurchase", method=RequestMethod.GET )
-	public ModelAndView addPurchaseView(@RequestParam("prodNo") int prodNo, HttpSession session) throws Exception {
+	public ModelAndView addPurchase(@RequestParam("prodNo") int prodNo, HttpSession session) throws Exception {
 		Purchase purchase = new Purchase();
 		purchase.setBuyer((User)session.getAttribute("user"));
 		purchase.setPurchaseProd(productService.getProduct(prodNo));
@@ -95,7 +95,7 @@ public class PurchaseController {
 	}
 	
 	@RequestMapping(value="updatePurchase", method=RequestMethod.GET )
-	public ModelAndView updatePurchaseView(@RequestParam("tranNo") int tranNo) throws Exception{
+	public ModelAndView updatePurchase(@RequestParam("tranNo") int tranNo) throws Exception{
 		//Business Logic
 		Purchase purchase = purchaseService.getPurchase(tranNo);
 		System.out.println("/purchase/updatePurchase : GET : "+purchase);
